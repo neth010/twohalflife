@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bayesian Statistics</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c10;
+    --surface: #111318;
+    --surface2: #181c24;
+    --border: #252a35;
+    --text: #e8eaf0;
+    --muted: #7a8099;
+    --accent: #5b8dee;
+    --accent2: #f0a44a;
+    --accent3: #63d4a0;
+    --accent4: #e05b8d;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 60px 32px 80px;
+    line-height: 1.8;
+  }
+
+  /* ── Typography matching the doc ── */
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.6rem;
+    font-weight: 700;
+    margin-bottom: 32px;
+    color: var(--text);
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 16px;
+  }
+  p {
+    font-size: 1rem;
+    color: #cdd0db;
+    margin-bottom: 20px;
+    text-indent: 1.6em;
+  }
+  p b, p strong { color: var(--text); font-weight: 500; }
+
+  /* ── Formula block ── */
+  .formula-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 28px 32px;
+    margin: 28px 0;
+    font-size: 1rem;
+    color: #cdd0db;
+  }
+  .formula-block p { text-indent: 0; margin-bottom: 8px; }
+  .formula-main {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    text-align: center;
+    margin: 16px 0;
+    color: var(--text);
+    letter-spacing: 0.04em;
+  }
+  .formula-main .frac {
+    display: inline-flex; flex-direction: column;
+    text-align: center; vertical-align: middle;
+    margin: 0 6px;
+  }
+  .formula-main .num { border-bottom: 2px solid var(--text); padding-bottom: 3px; }
+  .formula-main .den { padding-top: 3px; }
+  .where-list { margin: 12px 0 0 24px; }
+  .where-list li { list-style: none; padding: 2px 0; font-size: 0.95rem; color: #cdd0db; }
+
+  /* ── Pillars ── */
+  .pillars-title {
+    font-size: 1rem;
+    color: #cdd0db;
+    margin: 28px 0 16px;
+  }
+  .pillars-title b { color: var(--text); }
+
+  .pillar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid;
+    border-radius: 0 10px 10px 0;
+    padding: 18px 22px;
+    margin-bottom: 16px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+    position: relative;
+  }
+  .pillar:hover { transform: translateX(4px); background: var(--surface2); }
+  .pillar.open { background: var(--surface2); box-shadow: 0 4px 24px rgba(0,0,0,0.4); }
+  .pillar-prior     { border-color: #5b8dee; }
+  .pillar-likelihood{ border-color: #f0a44a; }
+  .pillar-posterior { border-color: #63d4a0; }
+  .pillar-evidence  { border-color: #e05b8d; }
+
+  .pillar-header {
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .pillar-name {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .pillar-prior     .pillar-name { color: #5b8dee; }
+  .pillar-likelihood .pillar-name { color: #f0a44a; }
+  .pillar-posterior .pillar-name { color: #63d4a0; }
+  .pillar-evidence  .pillar-name { color: #e05b8d; }
+
+  .pillar-chevron {
+    font-size: 12px; color: var(--muted);
+    transition: transform 0.2s;
+  }
+  .pillar.open .pillar-chevron { transform: rotate(180deg); }
+
+  .pillar-body {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.35s ease, opacity 0.3s;
+    opacity: 0;
+  }
+  .pillar.open .pillar-body { max-height: 400px; opacity: 1; }
+
+  .pillar-body-inner { padding-top: 12px; }
+  .pillar-body p {
+    text-indent: 0;
+    font-size: 0.93rem;
+    color: #cdd0db;
+    margin-bottom: 8px;
+  }
+  .pillar-body em {
+    color: var(--muted);
+    font-style: italic;
+    font-size: 0.9rem;
+    display: block;
+    margin-top: 6px;
+  }
+
+  /* ── Interactive section heading ── */
+  .sim-heading {
+    font-size: 1rem;
+    color: #cdd0db;
+    margin: 32px 0 24px;
+  }
+  .sim-heading b { color: var(--text); }
+
+  /* ── Coin Flip Sim ── */
+  .sim-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 28px;
+  }
+  .sim-box h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: var(--accent2);
+    margin-bottom: 6px;
+  }
+  .sim-box .sim-desc {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 16px;
+    text-indent: 0;
+  }
+
+  .ctrl-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-bottom: 10px; }
+  .ctrl-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  input[type=range] {
+    -webkit-appearance: none; height: 4px;
+    background: var(--border); border-radius: 2px;
+    outline: none; cursor: pointer; flex: 1; min-width: 80px;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 15px; height: 15px;
+    border-radius: 50%; background: var(--accent); cursor: pointer;
+  }
+  .val-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--text);
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 4px; padding: 2px 7px;
+  }
+
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin: 12px 0; }
+  .btn {
+    padding: 7px 16px; border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    cursor: pointer; border: 1px solid var(--border);
+    background: var(--surface2); color: var(--text);
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .btn:hover { background: var(--border); border-color: var(--accent); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn.primary:hover { background: #4a7de0; }
+  .btn.danger { background: #2a1520; border-color: var(--accent4); color: var(--accent4); }
+
+  canvas {
+    display: block; width: 100%;
+    background: transparent;
+    border-radius: 8px;
+  }
+
+  .stats-row { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0; }
+  .stat-chip {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 6px; padding: 7px 14px;
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    text-align: center; flex: 1; min-width: 80px;
+  }
+  .stat-chip .val { font-size: 1.1rem; font-weight: 600; color: var(--accent3); display: block; }
+  .flip-log { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 10px; max-height: 60px; overflow-y: auto; }
+  .flip-dot {
+    width: 17px; height: 17px; border-radius: 50%;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 8px; font-weight: 700;
+  }
+  .flip-dot.H { background: #5b8dee; color: #fff; }
+  .flip-dot.T { background: #e05b8d; color: #fff; }
+
+  /* Medical */
+  .probability-bar {
+    height: 42px; border-radius: 6px; overflow: hidden;
+    display: flex; margin: 10px 0; font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .bar-seg {
+    display: flex; align-items: center; justify-content: center;
+    transition: width 0.5s cubic-bezier(0.34,1.2,0.64,1);
+    white-space: nowrap; overflow: hidden; color: #fff; font-weight: 600;
+  }
+
+  /* MC */
+  .mc-result {
+    font-family: 'JetBrains Mono', monospace; font-size: 12px;
+    color: var(--muted); margin-top: 8px;
+  }
+  .mc-result span { color: var(--accent3); font-weight: 600; }
+
+  /* closing note */
+  .closing-note {
+    margin-top: 40px;
+    padding: 20px 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 0.95rem;
+    color: #cdd0db;
+    text-indent: 0;
+  }
+  .closing-note b { color: var(--text); }
+</style>
+</head>
+<body>
+
+<h1>Bayesian Statistics</h1>
+
+<p>
+  Bayesian statistics is an approach to data analysis the probability of where probability represents as
+  <b>degrees of belief</b> in a statement, unlike a frequencies of a long run process.
+</p>
+
+<p>
+  In traditional statistics parameters are assumed to be fixed, but in here parameters are treated as
+  random variables which means we can quantify the uncertainty of a parameter using probability distributions
+  and continuously update the uncertainty as new outcome comes along.
+</p>
+
+<p>Everything from the <b>Bayesian statistics</b> can represents from a single formula</p>
+
+<div class="formula-block">
+  <div class="formula-main">
+    P(A|B) =
+    <span class="frac">
+      <span class="num">P(B|A) · P(A)</span>
+      <span class="den">P(B)</span>
+    </span>
+  </div>
+  <p>Where:</p>
+  <ul class="where-list">
+    <li>A – parameter or hypothesis (what we want to learn about)</li>
+    <li>B – the observed data</li>
+  </ul>
+</div>
+
+<p class="pillars-title">There are four main pillars in this equation</p>
+
+<!-- PRIOR -->
+<div class="pillar pillar-prior" onclick="togglePillar(this)">
+  <div class="pillar-header">
+    <span class="pillar-name">The prior: P(A)</span>
+    <span class="pillar-chevron">▼</span>
+  </div>
+  <div class="pillar-body">
+    <div class="pillar-body-inner">
+      <p>The initial belief about the parameter before seen current data. It mainly based on past experiments, domain expertise or an uninformative prior.</p>
+      <em>Ex: The probability to get the "HEAD" from a flip of a fair coin is 0.5</em>
+
+      <!-- Inline prior visualiser -->
+      <div style="margin-top:16px;">
+        <div class="ctrl-row">
+          <span class="ctrl-label">α (heads)</span>
+          <input type="range" id="priorA" min="1" max="20" value="2" oninput="updatePriorViz()">
+          <span class="val-badge" id="priorAv">2</span>
+          <span class="ctrl-label" style="margin-left:8px;">β (tails)</span>
+          <input type="range" id="priorB" min="1" max="20" value="2" oninput="updatePriorViz()">
+          <span class="val-badge" id="priorBv">2</span>
+        </div>
+        <canvas id="priorCanvas" height="140"></canvas>
+        <div style="font-size:11px;color:var(--muted);margin-top:6px;font-family:'JetBrains Mono',monospace;">
+          Beta(α,β) prior — shape of your belief before seeing any data
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LIKELIHOOD -->
+<div class="pillar pillar-likelihood" onclick="togglePillar(this)">
+  <div class="pillar-header">
+    <span class="pillar-name">The Likelihood: P(B|A)</span>
+    <span class="pillar-chevron">▼</span>
+  </div>
+  <div class="pillar-body">
+    <div class="pillar-body-inner">
+      <p>The probability of getting A when given the parameter B is true. It reflects how well data is modelled.</p>
+      <div style="margin-top:16px;">
+        <div class="ctrl-row">
+          <span class="ctrl-label">True θ</span>
+          <input type="range" id="likeTheta" min="0.01" max="0.99" step="0.01" value="0.5" oninput="updateLikeViz()">
+          <span class="val-badge" id="likeThetaV">0.50</span>
+          <span class="ctrl-label" style="margin-left:8px;">n flips</span>
+          <input type="range" id="likeN" min="1" max="30" value="10" oninput="updateLikeViz()">
+          <span class="val-badge" id="likeNV">10</span>
+        </div>
+        <canvas id="likeCanvas" height="140"></canvas>
+        <div style="font-size:11px;color:var(--muted);margin-top:6px;font-family:'JetBrains Mono',monospace;">
+          Likelihood of observed data across all possible θ values
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- POSTERIOR -->
+<div class="pillar pillar-posterior" onclick="togglePillar(this)">
+  <div class="pillar-header">
+    <span class="pillar-name">The Posterior: P(A|B)</span>
+    <span class="pillar-chevron">▼</span>
+  </div>
+  <div class="pillar-body">
+    <div class="pillar-body-inner">
+      <p>This is the goal of the Bayesian analysis. It is the updatable probability distribution of the parameter when after take a new data into the account. It perfectly balances what knew before with what we just observed.</p>
+      <div style="margin-top:16px;">
+        <div class="ctrl-row">
+          <span class="ctrl-label">Prior α</span>
+          <input type="range" id="postA" min="1" max="15" value="2" oninput="updatePostViz()">
+          <span class="val-badge" id="postAv">2</span>
+          <span class="ctrl-label" style="margin-left:8px;">Observed H</span>
+          <input type="range" id="postH" min="0" max="30" value="7" oninput="updatePostViz()">
+          <span class="val-badge" id="postHv">7</span>
+          <span class="ctrl-label" style="margin-left:8px;">Observed T</span>
+          <input type="range" id="postT" min="0" max="30" value="3" oninput="updatePostViz()">
+          <span class="val-badge" id="postTv">3</span>
+        </div>
+        <canvas id="postCanvas" height="160"></canvas>
+        <div style="font-size:11px;color:var(--muted);margin-top:6px;font-family:'JetBrains Mono',monospace;">
+          <span style="color:#5b8dee">■</span> Prior &nbsp;
+          <span style="color:#f0a44a">■</span> Likelihood (scaled) &nbsp;
+          <span style="color:#63d4a0">■</span> Posterior
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EVIDENCE -->
+<div class="pillar pillar-evidence" onclick="togglePillar(this)">
+  <div class="pillar-header">
+    <span class="pillar-name">The marginal likelihood (evidence): P(B)</span>
+    <span class="pillar-chevron">▼</span>
+  </div>
+  <div class="pillar-body">
+    <div class="pillar-body-inner">
+      <p>This is basically a normalizing constant that ensures the probability under the posterior distribution <b>sums for 1</b>.</p>
+      <div style="margin-top:16px;">
+        <canvas id="evidCanvas" height="120"></canvas>
+        <div style="font-size:11px;color:var(--muted);margin-top:6px;font-family:'JetBrains Mono',monospace;">
+          Area under the unnormalized posterior = P(B). Dividing by it makes the total area = 1.
+        </div>
+        <div class="ctrl-row" style="margin-top:12px;">
+          <span class="ctrl-label">α</span>
+          <input type="range" id="evidA" min="1" max="15" value="3" oninput="updateEvidViz()">
+          <span class="val-badge" id="evidAv">3</span>
+          <span class="ctrl-label" style="margin-left:8px;">β</span>
+          <input type="range" id="evidB" min="1" max="15" value="5" oninput="updateEvidViz()">
+          <span class="val-badge" id="evidBv">5</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── Simulations heading (exact doc text) ── -->
+<p class="sim-heading">Here are some AI based interactive simulations to better understandings about <b>Bayesian Statistics.</b></p>
+
+<!-- SIM 1: Coin Flip -->
+<div class="sim-box">
+  <h3>Simulation 1 — Coin Flip Posterior Update</h3>
+  <p class="sim-desc">Set a hidden true bias, set your prior, and flip. The posterior narrows around the truth as evidence grows.</p>
+
+  <div class="ctrl-row">
+    <span class="ctrl-label">True bias (hidden)</span>
+    <input type="range" id="trueBias" min="0.01" max="0.99" step="0.01" value="0.65" oninput="document.getElementById('trueBiasV').textContent=parseFloat(this.value).toFixed(2);drawCoin()">
+    <span class="val-badge" id="trueBiasV">0.65</span>
+    <span class="ctrl-label" style="margin-left:8px;">Prior α</span>
+    <input type="range" id="cPriorA" min="1" max="15" value="2" oninput="document.getElementById('cPriorAv').textContent=this.value;drawCoin()">
+    <span class="val-badge" id="cPriorAv">2</span>
+    <span class="ctrl-label" style="margin-left:8px;">Prior β</span>
+    <input type="range" id="cPriorB" min="1" max="15" value="2" oninput="document.getElementById('cPriorBv').textContent=this.value;drawCoin()">
+    <span class="val-badge" id="cPriorBv">2</span>
+  </div>
+  <div class="btn-row">
+    <button class="btn primary" onclick="flipOnce()">Flip Once</button>
+    <button class="btn" onclick="flipN(10)">Flip ×10</button>
+    <button class="btn" onclick="flipN(50)">Flip ×50</button>
+    <button class="btn danger" onclick="resetCoin()">Reset</button>
+  </div>
+  <div class="stats-row">
+    <div class="stat-chip"><span class="val" id="nH">0</span>Heads</div>
+    <div class="stat-chip"><span class="val" id="nT">0</span>Tails</div>
+    <div class="stat-chip"><span class="val" id="postMode">—</span>Post. Mode</div>
+  </div>
+  <div class="flip-log" id="flipLog"></div>
+  <canvas id="coinCanvas" height="220" style="margin-top:12px;"></canvas>
+</div>
+
+<!-- SIM 2: Medical Test -->
+<div class="sim-box">
+  <h3>Simulation 2 — Medical Test & Base Rate</h3>
+  <p class="sim-desc">A positive test doesn't mean you have the disease. Bayes shows the real probability.</p>
+  <div class="ctrl-row">
+    <span class="ctrl-label">Prevalence (prior)</span>
+    <input type="range" id="prevalence" min="0.001" max="0.5" step="0.001" value="0.01" oninput="updateMedical()">
+    <span class="val-badge" id="prevV">1.0%</span>
+  </div>
+  <div class="ctrl-row">
+    <span class="ctrl-label">Sensitivity</span>
+    <input type="range" id="sensitivity" min="0.5" max="0.999" step="0.001" value="0.95" oninput="updateMedical()">
+    <span class="val-badge" id="sensV">95%</span>
+    <span class="ctrl-label" style="margin-left:8px;">Specificity</span>
+    <input type="range" id="specificity" min="0.5" max="0.999" step="0.001" value="0.95" oninput="updateMedical()">
+    <span class="val-badge" id="specV">95%</span>
+  </div>
+  <div style="margin:12px 0;">
+    <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;">P(Disease | Positive test) = </span>
+    <span style="font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;" id="ppvDisplay">—</span>
+  </div>
+  <div class="probability-bar" id="ppvBar"></div>
+  <div id="medStats" style="font-size:12px;color:var(--muted);line-height:2;font-family:'JetBrains Mono',monospace;margin-top:6px;"></div>
+</div>
+
+<!-- SIM 3: Monte Carlo -->
+<div class="sim-box">
+  <h3>Simulation 3 — Monte Carlo Posterior Sampling</h3>
+  <p class="sim-desc">Sample from the posterior distribution. This is exactly how the Lithium Problem Monte Carlo works — parameter samples propagated through equations.</p>
+  <div class="ctrl-row">
+    <span class="ctrl-label">Samples</span>
+    <input type="range" id="mcN" min="100" max="5000" step="100" value="1000" oninput="document.getElementById('mcNv').textContent=this.value">
+    <span class="val-badge" id="mcNv">1000</span>
+    <span class="ctrl-label" style="margin-left:8px;">Post. mean μ</span>
+    <input type="range" id="mcMu" min="0.1" max="0.9" step="0.01" value="0.5" oninput="document.getElementById('mcMuv').textContent=parseFloat(this.value).toFixed(2)">
+    <span class="val-badge" id="mcMuv">0.50</span>
+    <span class="ctrl-label" style="margin-left:8px;">Uncertainty σ</span>
+    <input type="range" id="mcSig" min="0.02" max="0.3" step="0.01" value="0.1" oninput="document.getElementById('mcSigv').textContent=parseFloat(this.value).toFixed(2)">
+    <span class="val-badge" id="mcSigv">0.10</span>
+  </div>
+  <div class="btn-row">
+    <button class="btn primary" onclick="runMC()">Run Simulation</button>
+  </div>
+  <canvas id="mcCanvas" height="200" style="margin-top:8px;"></canvas>
+  <div class="mc-result" id="mcResult"></div>
+</div>
+
+<!-- Closing paragraph (exact doc text) -->
+<div class="closing-note">
+  In this project we have to work with Monte-Carlo simulations to analyse the cosmological Lithium Problem
+  do the Bayesian processes are the true building blocks of the Monte-Carlo process. Basically Bayesian
+  Statistics are the <b>method</b> and Monte-Carlo process is the <b>execution</b> of it.
+</div>
+
+<script>
+// ── helpers ──────────────────────────────────────────────────────────
+function lgamma(x) {
+  const c=[0.99999999999980993,676.5203681218851,-1259.1392167224028,771.32342877765313,
+    -176.61502916214059,12.507343278686905,-0.13857109526572012,9.9843695780195716e-6,1.5056327351493116e-7];
+  if(x<0.5) return Math.log(Math.PI/Math.sin(Math.PI*x))-lgamma(1-x);
+  x-=1; let ag=c[0];
+  for(let i=1;i<9;i++) ag+=c[i]/(x+i);
+  const t=x+7.5;
+  return 0.5*Math.log(2*Math.PI)+(x+0.5)*Math.log(t)-t+Math.log(ag);
+}
+function logBeta(a,b){ return lgamma(a)+lgamma(b)-lgamma(a+b); }
+function betaPDF(x,a,b){
+  if(x<=0||x>=1) return 0;
+  return Math.exp((a-1)*Math.log(x)+(b-1)*Math.log(1-x)-logBeta(a,b));
+}
+function setupCanvas(id, h){
+  const c=document.getElementById(id);
+  const dpr=window.devicePixelRatio||1;
+  c.width=c.offsetWidth*dpr; c.height=h*dpr;
+  const ctx=c.getContext('2d');
+  ctx.scale(c.width/c.offsetWidth, c.height/h);
+  return {ctx, w:c.offsetWidth, h};
+}
+function drawBetaCurve(ctx,w,h,a,b,color,fill,pad){
+  pad=pad||{l:30,r:10,t:10,b:30};
+  const iw=w-pad.l-pad.r, ih=h-pad.t-pad.b;
+  const toX=v=>pad.l+iw*v;
+  const steps=200; let maxY=0;
+  for(let i=1;i<steps;i++) maxY=Math.max(maxY,betaPDF(i/steps,a,b));
+  maxY=Math.max(maxY,0.01)*1.1;
+  const toY=v=>pad.t+ih*(1-v/maxY);
+  if(fill){
+    ctx.beginPath();
+    ctx.moveTo(toX(0),toY(0));
+    for(let i=0;i<=steps;i++) ctx.lineTo(toX(i/steps),toY(betaPDF(i/steps,a,b)));
+    ctx.lineTo(toX(1),toY(0));
+    ctx.fillStyle=color+'22'; ctx.fill();
+  }
+  ctx.beginPath();
+  ctx.strokeStyle=color; ctx.lineWidth=2;
+  for(let i=0;i<=steps;i++){
+    const x=i/steps,y=betaPDF(x,a,b);
+    i===0?ctx.moveTo(toX(x),toY(y)):ctx.lineTo(toX(x),toY(y));
+  }
+  ctx.stroke();
+  return {toX,toY,maxY};
+}
+
+// ── Pillar toggle ──────────────────────────────────────────────────
+function togglePillar(el){
+  el.classList.toggle('open');
+  if(el.classList.contains('open')){
+    setTimeout(()=>{
+      if(el.querySelector('#priorCanvas')) updatePriorViz();
+      if(el.querySelector('#likeCanvas')) updateLikeViz();
+      if(el.querySelector('#postCanvas')) updatePostViz();
+      if(el.querySelector('#evidCanvas')) updateEvidViz();
+    },50);
+  }
+}
+
+// ── Prior viz ─────────────────────────────────────────────────────
+function updatePriorViz(){
+  const a=parseInt(document.getElementById('priorA').value);
+  const b=parseInt(document.getElementById('priorB').value);
+  document.getElementById('priorAv').textContent=a;
+  document.getElementById('priorBv').textContent=b;
+  const {ctx,w,h}=setupCanvas('priorCanvas',140);
+  ctx.clearRect(0,0,w,h);
+  drawGrid(ctx,w,h);
+  drawBetaCurve(ctx,w,h,a,b,'#5b8dee',true);
+  // axis labels
+  ctx.fillStyle='#7a8099';ctx.font='10px JetBrains Mono';ctx.textAlign='center';
+  for(let i=0;i<=5;i++) ctx.fillText((i/5).toFixed(1),30+(w-40)*i/5,h-8);
+}
+
+// ── Likelihood viz ─────────────────────────────────────────────────
+function updateLikeViz(){
+  const theta=parseFloat(document.getElementById('likeTheta').value);
+  const n=parseInt(document.getElementById('likeN').value);
+  document.getElementById('likeThetaV').textContent=theta.toFixed(2);
+  document.getElementById('likeNV').textContent=n;
+  const k=Math.round(theta*n);
+  const {ctx,w,h}=setupCanvas('likeCanvas',140);
+  ctx.clearRect(0,0,w,h);
+  drawGrid(ctx,w,h);
+  const pad={l:30,r:10,t:10,b:30};
+  const iw=w-pad.l-pad.r,ih=h-pad.t-pad.b;
+  const toX=v=>pad.l+iw*v;
+  const steps=200;
+  const vals=[];
+  for(let i=0;i<=steps;i++){
+    const t=i/steps;
+    vals.push(t===0||t===1?0:Math.exp(k*Math.log(t)+(n-k)*Math.log(1-t)));
+  }
+  const maxV=Math.max(...vals)*1.1||0.01;
+  const toY=v=>pad.t+ih*(1-v/maxV);
+  ctx.beginPath();ctx.strokeStyle='#f0a44a';ctx.lineWidth=2;
+  for(let i=0;i<=steps;i++){
+    const x=i/steps;
+    i===0?ctx.moveTo(toX(x),toY(vals[i])):ctx.lineTo(toX(x),toY(vals[i]));
+  }
+  ctx.stroke();
+  ctx.beginPath();ctx.moveTo(toX(0),toY(0));
+  for(let i=0;i<=steps;i++) ctx.lineTo(toX(i/steps),toY(vals[i]));
+  ctx.lineTo(toX(1),toY(0));
+  ctx.fillStyle='#f0a44422';ctx.fill();
+  // true theta line
+  ctx.setLineDash([3,3]);ctx.strokeStyle='#f0a44a88';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(toX(theta),pad.t);ctx.lineTo(toX(theta),pad.t+ih);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='#7a8099';ctx.font='10px JetBrains Mono';ctx.textAlign='center';
+  for(let i=0;i<=5;i++) ctx.fillText((i/5).toFixed(1),30+(w-40)*i/5,h-8);
+  ctx.fillStyle='#f0a44a';ctx.font='10px DM Sans';
+  ctx.fillText(`k=${k} heads in ${n} flips`,w/2,pad.t+10);
+}
+
+// ── Posterior viz ──────────────────────────────────────────────────
+function updatePostViz(){
+  const a0=parseInt(document.getElementById('postA').value);
+  const b0=2;
+  const hh=parseInt(document.getElementById('postH').value);
+  const tt=parseInt(document.getElementById('postT').value);
+  document.getElementById('postAv').textContent=a0;
+  document.getElementById('postHv').textContent=hh;
+  document.getElementById('postTv').textContent=tt;
+  const a1=a0+hh,b1=b0+tt;
+  const {ctx,w,h}=setupCanvas('postCanvas',160);
+  ctx.clearRect(0,0,w,h);
+  drawGrid(ctx,w,h);
+  // compute shared max
+  const steps=200; let maxY=0;
+  for(let i=1;i<steps;i++) maxY=Math.max(maxY,betaPDF(i/steps,a0,b0),betaPDF(i/steps,a1,b1));
+  maxY=Math.max(maxY,0.01)*1.1;
+  const pad={l:30,r:10,t:10,b:30};
+  const iw=w-pad.l-pad.r,ih=h-pad.t-pad.b;
+  const toX=v=>pad.l+iw*v;
+  const toY=v=>pad.t+ih*(1-v/maxY);
+  // prior
+  ctx.beginPath();ctx.strokeStyle='#5b8dee';ctx.lineWidth=1.5;ctx.setLineDash([4,3]);
+  for(let i=0;i<=steps;i++){const x=i/steps;i===0?ctx.moveTo(toX(x),toY(betaPDF(x,a0,b0))):ctx.lineTo(toX(x),toY(betaPDF(x,a0,b0)));}
+  ctx.stroke();ctx.setLineDash([]);
+  // posterior fill
+  ctx.beginPath();ctx.moveTo(toX(0),toY(0));
+  for(let i=0;i<=steps;i++) ctx.lineTo(toX(i/steps),toY(betaPDF(i/steps,a1,b1)));
+  ctx.lineTo(toX(1),toY(0));ctx.fillStyle='#63d4a022';ctx.fill();
+  ctx.beginPath();ctx.strokeStyle='#63d4a0';ctx.lineWidth=2.5;
+  for(let i=0;i<=steps;i++){const x=i/steps;i===0?ctx.moveTo(toX(x),toY(betaPDF(x,a1,b1))):ctx.lineTo(toX(x),toY(betaPDF(x,a1,b1)));}
+  ctx.stroke();
+  ctx.fillStyle='#7a8099';ctx.font='10px JetBrains Mono';ctx.textAlign='center';
+  for(let i=0;i<=5;i++) ctx.fillText((i/5).toFixed(1),30+(w-40)*i/5,h-8);
+}
+
+// ── Evidence viz ──────────────────────────────────────────────────
+function updateEvidViz(){
+  const a=parseInt(document.getElementById('evidA').value);
+  const b=parseInt(document.getElementById('evidB').value);
+  document.getElementById('evidAv').textContent=a;
+  document.getElementById('evidBv').textContent=b;
+  const {ctx,w,h}=setupCanvas('evidCanvas',120);
+  ctx.clearRect(0,0,w,h);
+  drawGrid(ctx,w,h);
+  const pad={l:30,r:10,t:10,b:30};
+  const iw=w-pad.l-pad.r,ih=h-pad.t-pad.b;
+  const toX=v=>pad.l+iw*v;
+  const steps=200; let maxY=0;
+  for(let i=1;i<steps;i++) maxY=Math.max(maxY,betaPDF(i/steps,a,b));
+  maxY=Math.max(maxY,0.01)*1.15;
+  const toY=v=>pad.t+ih*(1-v/maxY);
+  // shaded area = P(B)
+  ctx.beginPath();ctx.moveTo(toX(0),toY(0));
+  for(let i=0;i<=steps;i++) ctx.lineTo(toX(i/steps),toY(betaPDF(i/steps,a,b)));
+  ctx.lineTo(toX(1),toY(0));
+  ctx.fillStyle='#e05b8d33';ctx.fill();
+  ctx.beginPath();ctx.strokeStyle='#e05b8d';ctx.lineWidth=2;
+  for(let i=0;i<=steps;i++){const x=i/steps;i===0?ctx.moveTo(toX(x),toY(betaPDF(x,a,b))):ctx.lineTo(toX(x),toY(betaPDF(x,a,b)));}
+  ctx.stroke();
+  // label
+  ctx.fillStyle='#e05b8d';ctx.font='11px DM Sans';ctx.textAlign='center';
+  ctx.fillText('← shaded area = P(B) = normalizing constant →',w/2,pad.t+16);
+  ctx.fillStyle='#7a8099';ctx.font='10px JetBrains Mono';
+  for(let i=0;i<=5;i++) ctx.fillText((i/5).toFixed(1),toX(i/5),h-8);
+}
+
+// ── Shared grid ───────────────────────────────────────────────────
+function drawGrid(ctx,w,h){
+  ctx.strokeStyle='#252a35';ctx.lineWidth=0.5;
+  const pad={l:30,r:10,t:10,b:30};
+  for(let i=0;i<=5;i++){
+    const x=pad.l+(w-pad.l-pad.r)*i/5;
+    ctx.beginPath();ctx.moveTo(x,pad.t);ctx.lineTo(x,h-pad.b);ctx.stroke();
+    const y=pad.t+(h-pad.t-pad.b)*i/5;
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);ctx.stroke();
+  }
+}
+
+// ── Coin Flip ─────────────────────────────────────────────────────
+let heads=0,tails=0;
+function drawCoin(){
+  const a0=parseInt(document.getElementById('cPriorA').value);
+  const b0=parseInt(document.getElementById('cPriorB').value);
+  const a1=a0+heads,b1=b0+tails;
+  const {ctx,w,h}=setupCanvas('coinCanvas',220);
+  ctx.clearRect(0,0,w,h);
+  drawGrid(ctx,w,h);
+  const pad={l:30,r:10,t:10,b:30};
+  const iw=w-pad.l-pad.r,ih=h-pad.t-pad.b;
+  const toX=v=>pad.l+iw*v;
+  const steps=200; let maxY=0;
+  for(let i=1;i<steps;i++) maxY=Math.max(maxY,betaPDF(i/steps,a0,b0),betaPDF(i/steps,a1,b1));
+  maxY=Math.max(maxY,0.01)*1.1;
+  const toY=v=>pad.t+ih*(1-v/maxY);
+  // prior
+  ctx.beginPath();ctx.strokeStyle='#5b8dee';ctx.lineWidth=1.5;ctx.setLineDash([4,3]);
+  for(let i=0;i<=steps;i++){const x=i/steps;i===0?ctx.moveTo(toX(x),toY(betaPDF(x,a0,b0))):ctx.lineTo(toX(x),toY(betaPDF(x,a0,b0)));}
+  ctx.stroke();ctx.setLineDash([]);
+  // posterior fill+line
+  ctx.beginPath();ctx.moveTo(toX(0),toY(0));
+  for(let i=0;i<=steps;i++) ctx.lineTo(toX(i/steps),toY(betaPDF(i/steps,a1,b1)));
+  ctx.lineTo(toX(1),toY(0));ctx.fillStyle='#63d4a018';ctx.fill();
+  ctx.beginPath();ctx.strokeStyle='#63d4a0';ctx.lineWidth=2.5;
+  for(let i=0;i<=steps;i++){const x=i/steps;i===0?ctx.moveTo(toX(x),toY(betaPDF(x,a1,b1))):ctx.lineTo(toX(x),toY(betaPDF(x,a1,b1)));}
+  ctx.stroke();
+  // true bias
+  const tb=parseFloat(document.getElementById('trueBias').value);
+  ctx.setLineDash([3,3]);ctx.strokeStyle='#f0a44a';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(toX(tb),pad.t);ctx.lineTo(toX(tb),pad.t+ih);ctx.stroke();ctx.setLineDash([]);
+  // axis
+  ctx.fillStyle='#7a8099';ctx.font='10px JetBrains Mono';ctx.textAlign='center';
+  for(let i=0;i<=5;i++) ctx.fillText((i/5).toFixed(1),toX(i/5),h-8);
+  // legend
+  ctx.fillStyle='#5b8dee';ctx.fillRect(w-150,14,16,2);
+  ctx.fillStyle='#7a8099';ctx.font='10px DM Sans';ctx.textAlign='left';ctx.fillText('Prior',w-130,18);
+  ctx.fillStyle='#63d4a0';ctx.fillRect(w-150,26,16,2);ctx.fillText('Posterior',w-130,30);
+  ctx.fillStyle='#f0a44a';ctx.fillRect(w-150,38,16,2);ctx.fillText('True bias',w-130,42);
+  // posterior mode
+  if(a1>1&&b1>1){
+    const mode=(a1-1)/(a1+b1-2);
+    document.getElementById('postMode').textContent=mode.toFixed(3);
+  }
+}
+function flipOnce(){
+  const tb=parseFloat(document.getElementById('trueBias').value);
+  const r=Math.random()<tb;
+  if(r) heads++;else tails++;
+  document.getElementById('nH').textContent=heads;
+  document.getElementById('nT').textContent=tails;
+  const dot=document.createElement('div');
+  dot.className='flip-dot '+(r?'H':'T');dot.textContent=r?'H':'T';
+  document.getElementById('flipLog').appendChild(dot);
+  drawCoin();
+}
+function flipN(n){for(let i=0;i<n;i++) flipOnce();}
+function resetCoin(){
+  heads=0;tails=0;
+  document.getElementById('nH').textContent=0;
+  document.getElementById('nT').textContent=0;
+  document.getElementById('postMode').textContent='—';
+  document.getElementById('flipLog').innerHTML='';
+  drawCoin();
+}
+
+// ── Medical Test ──────────────────────────────────────────────────
+function updateMedical(){
+  const prev=parseFloat(document.getElementById('prevalence').value);
+  const sens=parseFloat(document.getElementById('sensitivity').value);
+  const spec=parseFloat(document.getElementById('specificity').value);
+  document.getElementById('prevV').textContent=(prev*100).toFixed(1)+'%';
+  document.getElementById('sensV').textContent=(sens*100).toFixed(0)+'%';
+  document.getElementById('specV').textContent=(spec*100).toFixed(0)+'%';
+  const N=10000;
+  const TP=N*prev*sens, FP=N*(1-prev)*(1-spec);
+  const ppv=TP/(TP+FP);
+  const d=document.getElementById('ppvDisplay');
+  d.textContent=(ppv*100).toFixed(1)+'%';
+  d.style.color=ppv>0.7?'var(--accent3)':ppv>0.3?'var(--accent2)':'var(--accent4)';
+  const w1=(ppv*100).toFixed(1),w2=(100-ppv*100).toFixed(1);
+  document.getElementById('ppvBar').innerHTML=`
+    <div class="bar-seg" style="width:${w1}%;background:var(--accent3);">${w1>8?w1+'% Sick':''}</div>
+    <div class="bar-seg" style="width:${w2}%;background:var(--accent4);">${w2>8?w2+'% Healthy':''}</div>`;
+  document.getElementById('medStats').innerHTML=
+    `TP: <span style="color:var(--accent3)">${TP.toFixed(0)}</span> &nbsp; FP: <span style="color:var(--accent4)">${FP.toFixed(0)}</span> &nbsp; (per 10,000 people)`;
+}
+
+// ── Monte Carlo ───────────────────────────────────────────────────
+function runMC(){
+  const n=parseInt(document.getElementById('mcN').value);
+  const mu=parseFloat(document.getElementById('mcMu').value);
+  const sig=parseFloat(document.getElementById('mcSig').value);
+  const samples=[];
+  for(let i=0;i<n;i++){
+    const u1=Math.random(),u2=Math.random();
+    const z=Math.sqrt(-2*Math.log(u1))*Math.cos(2*Math.PI*u2);
+    const s=mu+sig*z;
+    if(s>0&&s<1) samples.push(s);
+  }
+  const mean=samples.reduce((a,b)=>a+b,0)/samples.length;
+  const sorted=[...samples].sort((a,b)=>a-b);
+  const lo=sorted[Math.floor(sorted.length*0.025)];
+  const hi=sorted[Math.floor(sorted.length*0.975)];
+  document.getElementById('mcResult').innerHTML=
+    `Mean: <span>${mean.toFixed(4)}</span> &nbsp; 95% CI: <span>[${lo.toFixed(3)}, ${hi.toFixed(3)}]</span> &nbsp; n = <span>${samples.length}</span>`;
+  // draw histogram
+  const {ctx,w,h}=setupCanvas('mcCanvas',200);
+  ctx.clearRect(0,0,w,h);
+  drawGrid(ctx,w,h);
+  const bins=50,counts=new Array(bins).fill(0);
+  samples.forEach(s=>{const b=Math.min(Math.floor(s*bins),bins-1);counts[b]++;});
+  const maxC=Math.max(...counts);
+  const pad={l:30,r:10,t:10,b:30};
+  const iw=w-pad.l-pad.r,ih=h-pad.t-pad.b;
+  const toX=v=>pad.l+iw*v;
+  const toY=v=>pad.t+ih*(1-v/maxC);
+  // CI shading
+  ctx.fillStyle='rgba(91,141,238,0.1)';
+  ctx.fillRect(toX(lo),pad.t,toX(hi)-toX(lo),ih);
+  counts.forEach((c,i)=>{
+    const x0=toX(i/bins),x1=toX((i+1)/bins),y=toY(c);
+    ctx.fillStyle='rgba(91,141,238,0.45)';
+    ctx.strokeStyle='rgba(91,141,238,0.7)';ctx.lineWidth=0.5;
+    ctx.fillRect(x0,y,x1-x0-1,pad.t+ih-y);
+    ctx.strokeRect(x0,y,x1-x0-1,pad.t+ih-y);
+  });
+  // normal curve
+  ctx.beginPath();ctx.strokeStyle='#f0a44a';ctx.lineWidth=2;
+  let first=true;
+  for(let x=0.001;x<1;x+=0.003){
+    const g=(1/(sig*Math.sqrt(2*Math.PI)))*Math.exp(-0.5*((x-mu)/sig)**2);
+    const sc=g*samples.length/bins;
+    const py=toY(Math.min(sc,maxC));
+    first?(ctx.moveTo(toX(x),py),first=false):ctx.lineTo(toX(x),py);
+  }
+  ctx.stroke();
+  ctx.setLineDash([3,3]);ctx.strokeStyle='#63d4a0';ctx.lineWidth=1.5;
+  ctx.beginPath();ctx.moveTo(toX(mean),pad.t);ctx.lineTo(toX(mean),pad.t+ih);ctx.stroke();ctx.setLineDash([]);
+  ctx.fillStyle='#7a8099';ctx.font='10px JetBrains Mono';ctx.textAlign='center';
+  for(let i=0;i<=5;i++) ctx.fillText((i/5).toFixed(1),toX(i/5),h-8);
+}
+
+// ── Init ──────────────────────────────────────────────────────────
+drawCoin();
+updateMedical();
+runMC();
+window.addEventListener('resize',()=>{drawCoin();updateMedical();});
+</script>
+</body>
+</html>
