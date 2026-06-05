@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thermonuclear Reaction Rates &amp; Primordial Nucleosynthesis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Helvetica', sans-serif;
+            background-color: #0f172a;
+        }
+        h1, h2, h3 {
+            font-family: 'Merriweather', serif;
+        }
+        .slide {
+            display: none;
+            height: 720px;
+            width: 1280px;
+            background-color: #edeee6;
+            color: #0f172a;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.99); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        /* Interactive Step/Fragment Styling */
+        .step {
+            opacity: 0;
+            transform: translateY(15px);
+            transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+            pointer-events: none; /* Prevent interaction until visible */
+        }
+        .step.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+
+    <div id="presentation-container" class="relative">
+        
+        <div class="slide p-16 justify-between border-b-8 border-sky-800 active" id="slide-1">
+            <div class="space-y-4">
+                <span class="text-sky-800 font-bold uppercase tracking-widest text-sm bg-sky-100 px-3 py-1 rounded-full"><i class="fa-solid fa-atom mr-2"></i>Nuclear Astrophysics Presentation</span>
+                <h1 class="text-5xl font-bold text-slate-900 leading-tight">Thermonuclear Reaction Rates &amp;<br>Primordial Nucleosynthesis</h1>
+                <p class="text-xl text-slate-600 font-medium">Authors: Christian Iliadis &amp; Alain Coc (2020)</p>
+            </div>
+
+            <div class="grid grid-cols-4 gap-6 w-full mb-4">
+                <div class="step bg-white p-6 rounded-xl border-t-4 border-sky-700 shadow-md hover:shadow-lg transition-all">
+                    <div class="flex items-center space-x-3 mb-2 text-sky-700">
+                        <i class="fa-solid fa-burst text-xl"></i>
+                        <h3 class="font-bold text-lg">Big Bang Nucleosynthesis</h3>
+                    </div>
+                    <p class="text-sm text-slate-600">The historical 20-minute cosmic window that forged the universe's baseline elements.</p>
+                </div>
+
+                <div class="step bg-white p-6 rounded-xl border-t-4 border-emerald-600 shadow-md hover:shadow-lg transition-all">
+                    <div class="flex items-center space-x-3 mb-2 text-emerald-600">
+                        <i class="fa-solid fa-triangle-exclamation text-xl"></i>
+                        <h3 class="font-bold text-lg">Lithium Problem</h3>
+                    </div>
+                    <p class="text-sm text-slate-600">The severe factor-of-3 overprediction anomaly between simulated and observed <sup>7</sup>Li.</p>
+                </div>
+
+                <div class="step bg-white p-6 rounded-xl border-t-4 border-amber-600 shadow-md hover:shadow-lg transition-all">
+                    <div class="flex items-center space-x-3 mb-2 text-amber-600">
+                        <i class="fa-solid fa-circle-nodes text-xl"></i>
+                        <h3 class="font-bold text-lg">Nuclear Reaction Rates</h3>
+                    </div>
+                    <p class="text-sm text-slate-600">The cross-section probabilities mapped via cutting-edge Bayesian hierarchical data models.</p>
+                </div>
+
+                <div class="step bg-white p-6 rounded-xl border-t-4 border-purple-600 shadow-md hover:shadow-lg transition-all">
+                    <div class="flex items-center space-x-3 mb-2 text-purple-600">
+                        <i class="fa-solid fa-cube text-xl"></i>
+                        <h3 class="font-bold text-lg">Monte Carlo Methods</h3>
+                    </div>
+                    <p class="text-sm text-slate-600">Simultaneous, multi-parameter variations used to track total cosmic yield probability spaces.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide p-16 justify-between" id="slide-2">
+            <div class="mb-4">
+                <h2 class="text-3xl font-bold text-slate-900 border-b-2 border-slate-200 pb-3"><i class="fa-solid fa-book-bookmark text-sky-800 mr-3"></i>Theoretical Foundations of BBN</h2>
+            </div>
+
+            <div class="grid grid-cols-2 gap-8 h-full items-stretch my-auto py-4">
+                <div class="step bg-gradient-to-br from-slate-50 to-white p-8 rounded-2xl border border-slate-200 shadow-lg flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center space-x-3 mb-4 text-sky-800">
+                            <i class="fa-solid fa-sliders text-2xl"></i>
+                            <h3 class="text-2xl font-bold">A Parameter-Free Theory</h3>
+                        </div>
+                        <p class="text-slate-600 leading-relaxed mb-6">Assuming the standard model constraints, only two empirical inputs entirely govern early thermodynamic expansion environments:</p>
+                        
+                        <div class="space-y-4">
+                            <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex justify-between items-center">
+                                <span class="font-semibold text-slate-700">Cosmic Baryonic Density (<math><msub><mi>Ω</mi><mi>b</mi></msub><mo>·</mo><msup><mi>h</mi><mn>2</mn></msup></math>)</span>
+                                <span class="font-mono bg-sky-50 text-sky-800 font-bold px-3 py-1 rounded text-sm">0.02233 ± 0.00015</span>
+                            </div>
+                            <div class="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex justify-between items-center">
+                                <span class="font-semibold text-slate-700">Standard Neutrino Flavors (<math><msub><mi>N</mi><mi>ν</mi></msub></math>)</span>
+                                <span class="font-mono bg-sky-50 text-sky-800 font-bold px-3 py-1 rounded text-sm">3.0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-4">* Measured to sub-1% precision via Cosmic Microwave Background (CMB) anisotropies.</p>
+                </div>
+
+                <div class="step bg-gradient-to-br from-slate-900 to-slate-800 p-8 rounded-2xl text-white shadow-xl flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center space-x-3 mb-6 text-emerald-400">
+                            <i class="fa-solid fa-gnochi text-2xl"></i>
+                            <h3 class="text-2xl font-bold">Three Pillars of the Cosmological Model</h3>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div class="flex items-start space-x-3">
+                                <div class="bg-emerald-500/20 text-emerald-400 p-2 rounded-lg mt-1"><i class="fa-solid fa-chart-line text-sm"></i></div>
+                                <div>
+                                    <h4 class="font-bold text-slate-100">Cosmic Expansion</h4>
+                                    <p class="text-sm text-slate-300">Hubble expansion timeline constraints defining early space-time metric trajectories.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <div class="bg-emerald-500/20 text-emerald-400 p-2 rounded-lg mt-1"><i class="fa-solid fa-satellite-dish text-sm"></i></div>
+                                <div>
+                                    <h4 class="font-bold text-slate-100">Cosmic Microwave Background</h4>
+                                    <p class="text-sm text-slate-300">Primal photon signatures charting total early-stage baryonic mass environments.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-3">
+                                <div class="bg-emerald-500/20 text-emerald-400 p-2 rounded-lg mt-1"><i class="fa-solid fa-flask text-sm"></i></div>
+                                <div>
+                                    <h4 class="font-bold text-slate-100">Big Bang Nucleosynthesis</h4>
+                                    <p class="text-sm text-slate-300">Light element synthesis providing a direct, physical window to cosmic epoch parameters.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-slate-700/40 p-3 rounded-lg border border-slate-600/30 text-center text-xs text-slate-300">
+                        <strong>BBN Timeline:</strong> Freeze-Out (1s) ➔ Synthesis Begins (100s) ➔ Network Freeze (1000s)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="slide p-16 justify-between" id="slide-3">
+            <div class="mb-2">
+                <h2 class="text-3xl font-bold text-slate-900 border-b-2 border-slate-200 pb-3"><i class="fa-solid fa-chart-bar text-sky-800 mr-3"></i>Observed vs. Predicted Abundances</h2>
+                <p class="text-sm text-slate-500 mt-1">Testing accuracy over nine orders of magnitude across core light radioisotopes.</p>
+            </div>
+
+            <div class="grid grid-cols-4 gap-4 my-auto">
+                <div class="step bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                    <span class="font-bold text-xs uppercase text-slate-400 tracking-wider">Helium-4 (Y<sub>p</sub>)</span>
+                    <div class="text-2xl font-bold text-slate-800 my-2"><sup>4</sup>He</div>
+                    <div class="space-y-1.5 text-xs">
+                        <div class="flex justify-between"><span class="text-slate-500">Observed:</span><span class="font-mono font-semibold">0.2449±0.0040</span></div>
+                        <div class="flex justify-between"><span class="text-slate-500">Predicted:</span><span class="font-mono text-sky-700 font-semibold">0.24709±0.00017</span></div>
+                    </div>
+                    <div class="mt-3 text-[10px] text-slate-400 border-t pt-2">Source: Extragalactic H II regions</div>
+                </div>
+
+                <div class="step bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                    <span class="font-bold text-xs uppercase text-slate-400 tracking-wider">Deuterium (D/H)<sub>p</sub></span>
+                    <div class="text-2xl font-bold text-slate-800 my-2"><sup>2</sup>H</div>
+                    <div class="space-y-1.5 text-xs">
+                        <div class="flex justify-between"><span class="text-slate-500">Observed:</span><span class="font-mono font-semibold">2.527±0.030e-5</span></div>
+                        <div class="flex justify-between"><span class="text-slate-500">Predicted:</span><span class="font-mono text-sky-700 font-semibold">2.445±0.037e-5</span></div>
+                    </div>
+                    <div class="mt-3 text-[10px] text-slate-400 border-t pt-2">Source: High-redshift Ly-α systems</div>
+                </div>
+
+                <div class="step bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                    <span class="font-bold text-xs uppercase text-slate-400 tracking-wider">Helium-3 (³He/H)<sub>p</sub></span>
+                    <div class="text-2xl font-bold text-slate-800 my-2"><sup>3</sup>He</div>
+                    <div class="space-y-1.5 text-xs">
+                        <div class="flex justify-between"><span class="text-slate-500">Observed:</span><span class="font-mono font-semibold">≤ 1.1±0.2e-5</span></div>
+                        <div class="flex justify-between"><span class="text-slate-500">Predicted:</span><span class="font-mono text-sky-700 font-semibold">1.041±0.018e-5</span></div>
+                    </div>
+                    <div class="mt-3 text-[10px] text-slate-400 border-t pt-2">Source: Galactic H II upper limit</div>
+                </div>
+
+                <div class="step bg-red-50 p-5 rounded-xl border-2 border-red-500 shadow-md relative overflow-hidden">
+                    <div class="absolute top-0 right-0 bg-red-500 text-white text-[9px] uppercase tracking-widest font-bold px-2 py-0.5 rounded-bl">Anomaly</div>
+                    <span class="font-bold text-xs uppercase text-red-500 tracking-wider">Lithium-7 (⁷Li/H)<sub>p</sub></span>
+                    <div class="text-2xl font-bold text-red-800 my-2"><sup>7</sup>Li</div>
+                    <div class="space-y-1.5 text-xs">
+                        <div class="flex justify-between"><span class="text-red-600 font-semibold">Observed:</span><span class="font-mono font-bold text-red-700">1.58±0.31e-10</span></div>
+                        <div class="flex justify-between"><span class="text-red-600 font-semibold">Predicted:</span><span class="font-mono font-bold text-red-700">5.52±0.22e-10</span></div>
+                    </div>
+                    <div class="mt-3 text-[10px] text-red-500 border-t border-red-200 pt-2 font-medium">Source: Metal-poor halo stars</div>
+                </div>
+            </div>
+
+            <div class="step bg-red-600 text-white p-4 rounded-xl flex items-center justify-between shadow-lg">
+                <div class="flex items-center space-x-4">
+                    <i class="fa-solid fa-triangle-exclamation text-3xl"></i>
+                    <div>
+                        <h4 class="text-lg font-bold">The Cosmological Lithium Problem Identified</h4>
+                        <p class="text-sm opacity-90">While light isotope parameters align, simulated <sup>7</sup>Li overpredicts observable space-bound quantities by a clear factor of three.</p>
+                    </div>
+                </div>
+                <div class="text-3xl font-extrabold font-mono px-4 border-l border-red-400">~3× Gap</div>
+            </div>
+        </div>
+
+        <div class="slide p-16 justify-between" id="slide-4">
+            <div class="mb-2">
+                <h2 class="text-3xl font-bold text-slate-900 border-b-2 border-slate-200 pb-3"><i class="fa-solid fa-circle-question text-sky-800 mr-3"></i>Potential Explanations Evaluated</h2>
+                <p class="text-sm text-slate-500 mt-1">Breaking down why the theoretical simulation values drastically exceed real-world data bounds.</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-6 my-auto">
+                <div class="step bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-start space-x-4">
+                    <div class="bg-sky-100 text-sky-700 p-3 rounded-lg"><i class="fa-solid fa-magnifying-glass-chart text-xl"></i></div>
+                    <div>
+                        <h3 class="font-bold text-lg text-slate-800">Observation Systematics</h3>
+                        <p class="text-sm text-slate-600 mt-1">Unknown structural biases or atmospheric profiling inaccuracies hidden within ancient halo star data models.</p>
+                    </div>
+                </div>
+
+                <div class="step bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-start space-x-4">
+                    <div class="bg-amber-100 text-amber-700 p-3 rounded-lg"><i class="fa-solid fa-star text-xl"></i></div>
+                    <div>
+                        <h3 class="font-bold text-lg text-slate-800">Stellar Physics (Depletion)</h3>
+                        <p class="text-sm text-slate-600 mt-1">Uniform <em>in-situ</em> depletion and burning of delicate lithium layers carried into deep hot zones across stellar interiors over cosmic timelines.</p>
+                    </div>
+                </div>
+
+                <div class="step bg-sky-900 text-white p-5 rounded-xl shadow-md flex items-start space-x-4 border-l-8 border-sky-400">
+                    <div class="bg-white/10 text-sky-300 p-3 rounded-lg"><i class="fa-solid fa-atom text-xl"></i></div>
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <h3 class="font-bold text-lg">Nuclear Physics Rates</h3>
+                        </div>
+                        <p class="text-sm text-sky-100 mt-1">Potential systemic cross-section math errors in the underlying thermonuclear rates that govern Lithium-7/Beryllium-7 synthesis channels.</p>
+                    </div>
+                </div>
+
+                <div class="step bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-start space-x-4">
+                    <div class="bg-purple-100 text-purple-700 p-3 rounded-lg"><i class="fa-solid fa-bacterium text-xl"></i></div>
+                    <div>
+                        <h3 class="font-bold text-lg text-slate-800">Beyond the Standard Model</h3>
+                        <p class="text-sm text-slate-600 mt-1">Exotic physics solutions (e.g., decaying dark matter loops). However, these extensions historically corrupt the highly sensitive, matching Deuterium yield caps.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-100 text-slate-700 p-3 rounded-lg text-center text-sm font-medium border border-slate-200">
+                <i class="fa-solid fa-circle-info text-sky-800 mr-2"></i><strong>Central Inquiry:</strong> Can undiscovered nuclear physics reaction rate variations account for all observed primordial parameters?
+            </div>
+        </div>
+
+        <div class="slide p-16 justify-between" id="slide-5">
+            <div>
+                <h2 class="text-3xl font-bold text-slate-900 border-b-2 border-slate-200 pb-2"><i class="fa-solid fa-table-list text-sky-800 mr-3"></i>Key Thermonuclear Reactions of BBN</h2>
+                <p class="text-sm text-slate-500 mt-1">Highlighting reaction pathways directly tied to the synthesis and destruction of <sup>7</sup>Be and <sup>7</sup>Li.</p>
+            </div>
+
+            <div class="my-auto overflow-hidden rounded-xl border border-slate-200 shadow-md bg-white">
+                <table class="w-full text-left border-collapse text-sm">
+                    <thead>
+                        <tr class="bg-slate-800 text-slate-200">
+                            <th class="p-3 font-semibold">Reaction Channel</th>
+                            <th class="p-3 font-semibold">Uncertainty (1 GK)</th>
+                            <th class="p-3 font-semibold">Statistical Methodology</th>
+                            <th class="p-3 font-semibold">Core Chemical Yield Impact</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100 text-slate-700">
+                        <tr class="step hover:bg-slate-50 transition-colors">
+                            <td class="p-3 font-mono font-medium">n ↔ p</td>
+                            <td class="p-3 text-slate-500">0.09%</td>
+                            <td class="p-3">Theory + experimental neutron lifetime data</td>
+                            <td class="p-3 text-slate-600">Helium-4 absolute fraction limit</td>
+                        </tr>
+                        <tr class="step hover:bg-slate-50 transition-colors">
+                            <td class="p-3 font-mono font-medium">p(n, γ)d</td>
+                            <td class="p-3 text-slate-500">0.4%</td>
+                            <td class="p-3">MCMC / Effective Field Theory structure</td>
+                            <td class="p-3 text-slate-600">Deuterium, Helium-4 baseline parameters</td>
+                        </tr>
+                        <tr class="step hover:bg-slate-50 transition-colors">
+                            <td class="p-3 font-mono font-medium">d(p, γ)³He</td>
+                            <td class="p-3 text-slate-500">3.7%</td>
+                            <td class="p-3">Hierarchical Bayesian data synthesis models</td>
+                            <td class="p-3 text-slate-600">Deuterium, Helium-3, Lithium-7 pathways</td>
+                        </tr>
+                        <tr class="step bg-amber-50/70 text-amber-950 font-medium border-l-4 border-amber-500">
+                            <td class="p-3 font-mono"> ³He(α, γ)<strong>⁷Be</strong></td>
+                            <td class="p-3">2.4%</td>
+                            <td class="p-3">Hierarchical Bayesian Data Analysis Models</td>
+                            <td class="p-3 text-amber-800">Direct precursor pathway forming 95% of <sup>7</sup>Li</td>
+                        </tr>
+                        <tr class="step bg-amber-50/70 text-amber-950 font-medium border-l-4 border-amber-500">
+                            <td class="p-3 font-mono"> <strong>⁷Be</strong>(n, p)⁷Li</td>
+                            <td class="p-3">2.1%</td>
+                            <td class="p-3">Bayesian R-Matrix Experimental Data Fitting</td>
+                            <td class="p-3 text-amber-800">Governs <sup>7</sup>Be burning via neutron exchange</td>
+                        </tr>
+                        <tr class="step bg-amber-50/70 text-amber-950 font-medium border-l-4 border-amber-500">
+                            <td class="p-3 font-mono"> <strong>⁷Be</strong>(d, p)2α</td>
+                            <td class="p-3">± Factor 3</td>
+                            <td class="p-3">Rijal et al. (2019) Resonance Discoveries</td>
+                            <td class="p-3 text-amber-800">Destruction pathway via deuteron collision</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="step bg-sky-50 border border-sky-200 text-sky-950 p-3 rounded-lg text-xs font-medium">
+                <strong>Paper Verdict:</strong> Genetic algorithms show that resolving the <sup>7</sup>Li gap via these pathways requires changing the <sup>7</sup>Be(d, p)2α rate by a massive <strong>×200</strong>—a value far outside realistic bounds. <strong>A nuclear physics solution is highly unlikely.</strong>
+            </div>
+        </div>
+
+        <div class="absolute bottom-4 right-6 flex items-center space-x-3 z-50">
+            <button id="prev-btn" class="bg-slate-800 hover:bg-slate-700 text-white w-10 h-10 rounded-full flex items-center justify-center transition-all disabled:opacity-30 disabled:pointer-events-none" disabled>
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <span id="slide-indicator" class="text-xs font-bold font-mono tracking-widest text-slate-400 bg-slate-900/80 px-3 py-2 rounded-full min-w-[70px] text-center">1 / 5</span>
+            <button id="next-btn" class="bg-slate-800 hover:bg-slate-700 text-white w-10 h-10 rounded-full flex items-center justify-center transition-all disabled:opacity-30 disabled:pointer-events-none">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            let currentSlideIndex = 1;
+            const totalSlides = 5;
+
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const indicator = document.getElementById('slide-indicator');
+
+            // Initialize fragments for the very first slide if any exist
+            getCurrentSteps().forEach(s => s.classList.remove('visible'));
+
+            function getCurrentSlideElement() {
+                return document.getElementById(`slide-${currentSlideIndex}`);
+            }
+
+            function getCurrentSteps() {
+                return getCurrentSlideElement().querySelectorAll('.step');
+            }
+
+            function getCurrentVisibleSteps() {
+                return getCurrentSlideElement().querySelectorAll('.step.visible');
+            }
+
+            function handleNext() {
+                const steps = getCurrentSteps();
+                const visibleSteps = getCurrentVisibleSteps();
+
+                // If there are hidden steps on this page, show the next one
+                if (visibleSteps.length < steps.length) {
+                    steps[visibleSteps.length].classList.add('visible');
+                } else {
+                    // No hidden steps left on this page, advance to the next slide
+                    if (currentSlideIndex < totalSlides) {
+                        currentSlideIndex++;
+                        // Reset the newly opened slide's steps to hidden
+                        getCurrentSteps().forEach(s => s.classList.remove('visible'));
+                        updateSlideInterface();
+                    }
+                }
+            }
+
+            function handlePrev() {
+                const visibleSteps = getCurrentVisibleSteps();
+
+                // If there are visible steps on this page, hide the last one
+                if (visibleSteps.length > 0) {
+                    visibleSteps[visibleSteps.length - 1].classList.remove('visible');
+                } else {
+                    // No visible steps left on this page, move back to the previous slide
+                    if (currentSlideIndex > 1) {
+                        currentSlideIndex--;
+                        updateSlideInterface();
+                        // When going backward, automatically make all steps on the previous slide visible
+                        getCurrentSteps().forEach(s => s.classList.add('visible'));
+                    }
+                }
+            }
+
+            function updateSlideInterface() {
+                document.querySelectorAll('.slide').forEach((slide, idx) => {
+                    if (idx + 1 === currentSlideIndex) {
+                        slide.classList.add('active');
+                    } else {
+                        slide.classList.remove('active');
+                    }
+                });
+
+                indicator.textContent = `${currentSlideIndex} / ${totalSlides}`;
+                
+                // Adjust dynamic UI disabled states accurately
+                prevBtn.disabled = (currentSlideIndex === 1 && getCurrentVisibleSteps().length === 0);
+                nextBtn.disabled = (currentSlideIndex === totalSlides && getCurrentVisibleSteps().length === getCurrentSteps().length);
+            }
+
+            // Click Events
+            nextBtn.addEventListener('click', () => { handleNext(); updateSlideInterface(); });
+            prevBtn.addEventListener('click', () => { handlePrev(); updateSlideInterface(); });
+
+            // Keyboard Controls (Left/Right Arrows and Spacebar)
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight' || e.key === ' ') {
+                    e.preventDefault(); // Stop spacebar scrolling down the screen
+                    handleNext();
+                    updateSlideInterface();
+                } else if (e.key === 'ArrowLeft') {
+                    handlePrev();
+                    updateSlideInterface();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
